@@ -1,0 +1,19 @@
+{
+  "name": "pub-sub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "co": "^4.6.0",
+    "co-redis": "^2.1.0",
+    "redis": "^2.6.0-2",
+    "mysql":"*",
+    "co-mysql":"*"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
