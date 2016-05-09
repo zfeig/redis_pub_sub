@@ -11,21 +11,9 @@ const sub= require('./db/redis');
 var mysql = require('./db/mysql');
 var wrap = require('co-redis');
 
-function* popAndQuery(){
-	 //执行队列操作，更新订单状态
-    		 
-    		  	 let info = yield mysql.query("select * from order_code limit 1");
-    		  	 console.log(JSON.parse(JSON.stringify(info)));
-
-    		  	  let ret = yield sub.RPOP(C.queue).exec();
-                 console.log('ret is %s',ret);
-}
-
-
      //监听频道消息    	
     	sub.on("message",function(channel,message){
     	   console.log("收到来自频道：%s的消息：%s",channel,message); 
-          
              try{
                     //sub模式下开启新的客户端
 	    			sub.duplicate(function(err,client){
@@ -38,43 +26,24 @@ function* popAndQuery(){
 	             			let order_code =  yield client.RPOP(C.queue);
 	             			console.log("从队列弹出订单号：%s",order_code);
 	             			
-	             			//根据订单号查询订单表数据
+	             			//根据订单号查询订单表数据,有记录更新订单状态
 	             			if(order_code){
 	             			 let ret = yield mysql.query("update order_code set status = 1,timeline = UNIX_TIMESTAMP() where order_code =?",[order_code]);
 	             			 if(ret.affectedRows > 0){
 	             			 	console.log('update ok!!');
 	             			 }
-
+                             //other operation 其他业务逻辑
 	             			}
-
 
 
              		      }).catch(function(err){console.log(err)});
 
     
              		});
-
-
-             		
-             		
-     
-
-
-
-
-
-
-
-
              }catch(err){
              		console.log(err);
              }
-          
-           
-
     	});
-
-
     
     //订阅频道
     co(function* () {
